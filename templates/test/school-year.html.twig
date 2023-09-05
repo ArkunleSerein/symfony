@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block body %}
+ <h1> {{ title }} </h1>
+{% for schoolYear in schoolYears %}
+    <h2>{{ schoolYear.name }} (id {{ schoolYear.id }})
+        {% if schoolYear.startDate %}{{ schoolYear.startDate | date('d/m/Y') }}{% endif %}
+    </h2>
+    <p>
+        {{ schoolYear.description }}
+    </p>
+{% endfor %}
+{% endblock %}
+
+
