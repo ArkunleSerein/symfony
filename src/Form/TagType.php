@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Tag;
 use App\Entity\Project;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -18,7 +19,7 @@ class TagType extends AbstractType
             ->add('description')
             ->add('projects', EntityType::class, [
                 'class' => Project::class,
-                'choice_label' => function(Project $project) {
+                'choice_label' => function (Project $project) {
                     return "{$project->getName()} (id {$project->getId()})";
                 },
                 'multiple' => true,
@@ -27,8 +28,12 @@ class TagType extends AbstractType
                     'class' => 'form_scrollable-checkboxes',
                 ],
                 'by_reference' => false,
-            ])
-        ;
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('p')
+                        ->orderBy('p.name', 'ASC')
+                        ->addOrderBy('p.id', 'ASC');
+                },
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
