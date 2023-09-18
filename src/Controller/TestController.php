@@ -52,15 +52,11 @@ class TestController extends AbstractController
         // récupération de l'objet dont l'id est 1
         $tag4 = $tagRepository->find(4);
 
-        // modification d'un objet
-        $tag4->setName('python');
-        $tag4->setDescription(null);
         // pas la peine d'utiliser persist() si l'objet provient de la BDD
         $em->flush();
 
-        //  Récupération du student dont l'id est 1
-        $student = $studentRepository->find(1);
 
+        $student = $studentRepository->find(1);
         // association du tag 4 au student 1
         $student->addTag($tag4);
         $em->flush();
@@ -88,6 +84,22 @@ class TestController extends AbstractController
 
         // récupération des tags qui contiennent certains mot-clés
         $keywordTag1 = $tagRepository->findByKeyword('HTML');
+        $keywordTags2 = $tagRepository->findByKeyword('CSS');
+
+        //récupération des tags à partir d'une schoolYear// Récupération des tags contenant certains mots clés
+
+        $schoolYearRepository = $em->getRepository(SchoolYear::class);
+        $schoolYear = $schoolYearRepository->find(1);
+        $schoolYearTags = $tagRepository->findBySchoolYear($schoolYear);
+
+        // mise à jour des relations d'un tag
+        $studentRepository = $em->getRepository(Student::class);
+        //  Récupération du student dont l'id est 2
+        $student = $studentRepository->find(2);
+        $htmlTag = $tagRepository->find(1);
+        $htmlTag->addStudent($student);
+        $em->flush();
+        
 
 
         $title = 'Test des tags';
@@ -101,6 +113,8 @@ class TestController extends AbstractController
             'nullDescriptionTags' => $nullDescriptionTags,
             'notNullDescriptionTags' => $notNullDescriptionTags,
             'keywordTags1' => $keywordTag1,
+            'schoolYearTags' => $schoolYearTags,
+            'htmlTag' => $htmlTag,
         ]);
     }
 

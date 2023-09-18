@@ -49,4 +49,21 @@
 
 {% endfor %}
 
+<h2>Liste des tags d'une schoolYear</h2>
+
+{% for tag in schoolYearTags %}
+<h3>{{ tag.name }}(id {{ tag.id }})</h3>
+<p>
+    {{tag.description}}
+</p>
+{% endfor %}
+
+<h2>Liste des students du tag HTML</h2>
+
+<ul>
+{% for student in htmlTag.students %}
+ <li>{{ student.firstName }} {{ student.lastName }} (id {{ student.id }}) </li>
+{% endfor %}
+</ul>
+
 {% endblock %}
