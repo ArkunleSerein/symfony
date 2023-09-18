@@ -150,4 +150,8 @@ class Student
 
         return $this;
     }
+    public function __toString()
+    {
+        return "{$this->getFirstName()} (id {$this->getLastName()})";
+    }
 }
