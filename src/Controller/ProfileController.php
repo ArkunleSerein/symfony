@@ -6,17 +6,19 @@ use App\Entity\Student;
 use App\Form\StudentType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\COmponent\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/profile')]
+
 class ProfileController extends AbstractController
 {
-    #[Route('/profile/{id}', name: 'app_profile_index')]
+    #[Route('/{id}/edit', name: 'app_profile_edit')]
     public function edit(Request $request, Student $student, EntityManagerInterface $entityManager): Response
     {
-        // user == role_admin ? => accès
-        // user == role_user ? user ==propriétaire du profil ? => accès
+        // TODO user == role_admin ? => accès
+        // TODO user == role_user ? user ==propriétaire du profil ? => accès
         
         $form = $this->createForm(StudentType::class, $student);
         $form->handleRequest($request);
@@ -24,12 +26,22 @@ class ProfileController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            // return $this->redirectToRoute('app_profile_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_profile_show', [
+                'id' => $student->getId(),
+            ], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('profile/index.html.twig', [
+        return $this->renderForm('profile/edit.html.twig', [
             'student' => $student,
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_profile_show', methods: ['GET'])]
+    public function show(Student $student): Response
+    {
+        return $this->render('profile/show.html.twig', [
+            'student' => $student,
         ]);
     }
 }

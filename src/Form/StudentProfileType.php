@@ -7,15 +7,13 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class UserType extends AbstractType
+class StudentProfileType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('email')
-            //->add('roles')
-            ->add('password')
-            ->add('student')
+            ->add('student', StudentType::class)
         ;
     }
 

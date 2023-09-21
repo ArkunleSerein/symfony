@@ -17,12 +17,21 @@
             </tr>
             <tr>
                 <th>Roles</th>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                <td>
+                {% for role in user.roles %}
+                    {{ role }}{{ loop.last ? '':',' }}
+                {% endfor %}
+                </td>
             </tr>
+                {% if 'ROLE_ADMIN' not in user.roles %}
+                    {# le user n'est pas un admin, c'est un student #}
             <tr>
-                <th>Password</th>
-                <td>{{ user.password }}</td>
+                <th>Extra</th>
+                <td>
+                    {{ user.student.firstName}} {{ user.student.lastName}}
+                </td>
             </tr>
+                {% endif %}
             <tr>
                 <th>CreatedAt</th>
                 <td>{{ user.createdAt ? user.createdAt|date('Y-m-d H:i:s') : '' }}</td>

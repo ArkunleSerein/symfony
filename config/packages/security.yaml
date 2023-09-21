@@ -28,7 +28,7 @@ security:
                 # 604800 seconds == 7 days
                 lifetime: 604800
                 path: /
-                always_remember_me: true
+                always_remember_me: false
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

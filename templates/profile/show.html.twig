@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block body %}
+    <h1>Profile</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ student.id }}</td>
+            </tr>
+            <tr>
+                <th>FirstName</th>
+                <td>{{ student.firstName }}</td>
+            </tr>
+            <tr>
+                <th>LastName</th>
+                <td>{{ student.lastName }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_profile_edit', {'id': student.id}) }}">edit</a>
+{% endblock %}

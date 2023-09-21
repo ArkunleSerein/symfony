@@ -3,7 +3,9 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
-use App\Form\UserType;
+use App\Form\AdminProfileType;
+use App\Form\StudentProfileType;
+use App\Form\UserPasswordType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,14 +24,43 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_admin_user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/new-student', name: 'app_admin_user_new_student', methods: ['GET', 'POST'])]
+    public function newStudent(Request $request, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(StudentProfileType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $user
+                ->setRoles(['ROLE_USER'])
+                ->setPassword('')
+            ;
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_admin_user_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('admin/user/new.html.twig', [
+            'user' => $user,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/new-admin', name: 'app_admin_user_new_admin', methods: ['GET', 'POST'])]
+    public function newAdmin(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $user = new User();
+        $form = $this->createForm(AdminProfileType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user
+                ->setRoles(['ROLE_ADMIN'])
+                ->setPassword('')
+            ;
+
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -53,7 +84,32 @@ class UserController extends AbstractController
     #[Route('/{id}/edit', name: 'app_admin_user_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(UserType::class, $user);
+        if (in_array('ROLE_ADMIN', $user->getRoles())) {
+            $form = $this->createForm(AdminProfileType::class, $user);
+        } else {
+            $form = $this->createForm(StudentProfileType::class, $user);
+        }
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_admin_user_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('admin/user/edit.html.twig', [
+            'user' => $user,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/password', name: 'app_admin_user_password', methods: ['GET', 'POST'])]
+    public function password(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    {
+ 
+        $form = $this->createForm(UserPasswordType::class, $user);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -71,7 +127,7 @@ class UserController extends AbstractController
     #[Route('/{id}', name: 'app_admin_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->request->get('_token'))) {
             $entityManager->remove($user);
             $entityManager->flush();
         }
