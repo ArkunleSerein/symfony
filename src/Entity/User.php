@@ -4,22 +4,31 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
+#[Assert\Cascade]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'my_user')]
+#[UniqueEntity('email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use TimestampableEntity;
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180, unique: true)]
+    #[Assert\Email()]
+    #[Assert\NotBlank]
+    #[ORM\Column(
+        length: 180,
+        unique: true
+    )]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -27,11 +36,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @var string The hashed password
-     */
+    */
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 3,
+        max: 191,
+    )]
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\OneToOne(inversedBy: 'user', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(
+        inversedBy: 'user',
+        cascade: [
+            'persist',
+            'remove'
+        ]
+    )]
     private ?Student $student = null;
 
     public function getId(): ?int
@@ -122,7 +142,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
-    
+
     public function getStudent(): ?Student
     {
         return $this->student;

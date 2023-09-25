@@ -6,6 +6,8 @@ use App\Repository\StudentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: StudentRepository::class)]
 class Student
@@ -25,13 +27,29 @@ class Student
     #[ORM\JoinColumn(nullable: false)]
     private ?SchoolYear $schoolYear = null;
 
-    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'students')]
+    #[ORM\ManyToMany(
+        targetEntity: Tag::class,
+        inversedBy: 'students'
+    )]
     private Collection $tags;
 
-    #[ORM\ManyToMany(targetEntity: Project::class, inversedBy: 'students')]
+    #[Assert\Count(
+        min: 0,
+        max: 1
+    )]
+    #[ORM\ManyToMany(
+        targetEntity: Project::class,
+        inversedBy: 'students'
+    )]
     private Collection $projects;
 
-    #[ORM\OneToOne(mappedBy: 'student', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(
+        mappedBy: 'student',
+        cascade: [
+            'persist',
+            'remove'
+        ]
+    )]
     private ?User $user = null;
 
     public function __construct()

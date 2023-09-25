@@ -59,13 +59,9 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
                 // redirection vers la back office
                 return new RedirectResponse($this->urlGenerator->generate('app_admin_tag_index'));
         } else {
-
-            // l'utilisateur est un student
-            $student = $user->getStudent();
-
             // redirection vers la page profil
             return new RedirectResponse($this->urlGenerator->generate('app_profile_show', [
-                'id' => $student->getId(),
+                'id' => $user->getId(),
             ]));
         }
     }

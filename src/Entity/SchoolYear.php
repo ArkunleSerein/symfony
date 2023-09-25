@@ -7,8 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SchoolYearRepository::class)]
+#[UniqueEntity('name')] // contrainte d'unicité.
 class SchoolYear
 {
     #[ORM\Id]
@@ -16,19 +19,38 @@ class SchoolYear
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 3,
+        max: 191,
+    )]
     #[ORM\Column(length: 191)]
     private ?string $name = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(max: 1000)]
+    #[ORM\Column(
+        type: Types::TEXT,
+        nullable: true
+    )]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[ORM\Column(
+        type: Types::DATE_MUTABLE,
+        nullable: true
+    )]
     private ?\DateTimeInterface $startDate = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[Assert\GreaterThan(propertyPath: 'startDate')]
+    #[ORM\Column(
+        type: Types::DATE_MUTABLE,
+        nullable: true
+    )]
     private ?\DateTimeInterface $endDate = null;
 
-    #[ORM\OneToMany(mappedBy: 'schoolYear', targetEntity: Student::class)]
+    #[ORM\OneToMany(
+        mappedBy: 'schoolYear',
+        targetEntity: Student::class
+    )]
     private Collection $students;
 
     public function __construct()

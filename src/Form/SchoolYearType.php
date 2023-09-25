@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\SchoolYear;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -14,8 +15,16 @@ class SchoolYearType extends AbstractType
         $builder
             ->add('name')
             ->add('description')
-            ->add('startDate')
-            ->add('endDate')
+            ->add('startDate',
+            DateType::class,
+            [
+                'widget' => 'single_text',
+            ])
+            ->add('endDate',
+            DateType::class,
+            [
+                'widget' => 'single_text',
+            ])
         ;
     }
 

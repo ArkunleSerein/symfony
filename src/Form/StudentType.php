@@ -2,8 +2,13 @@
 
 namespace App\Form;
 
+use App\Entity\SchoolYear;
 use App\Entity\Student;
+use App\Entity\Tag;
+use App\Entity\Project;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -14,10 +19,45 @@ class StudentType extends AbstractType
         $builder
             ->add('firstName')
             ->add('lastName')
-            ->add('schoolYear')
-            ->add('tags')
-            ->add('projects')
-        ;
+            ->add('schoolYear', EntityType::class, [
+                'class' => SchoolYear::class,
+                'choice_label' => function (SchoolYear $schoolYear) {
+                    $startDate = '';
+                    if ($schoolYear->getStartDate()) {
+                        $startDate = $schoolYear->getStartDate()->format('Y');
+                    }
+
+                    return "{$schoolYear->getName()} {$startDate}";
+                },
+                'multiple' => false,
+                'expanded' => true,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('s')
+                        ->orderBy('s.name', 'ASC')
+                        ->addOrderBy('s.startDate', 'ASC');
+                },
+            ])
+            ->add('tags', EntityType::class, [
+                'class' => Tag::class,
+                'choice_label' => 'name',
+                'multiple' => true,
+                'expanded' => true,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('t')
+                        ->orderBy('t.name', 'ASC');
+                }
+            ])
+            ->add('projects', EntityType::class, [
+                'class' => Project::class,
+                'choice_label' => 'name',
+                'multiple' => true,
+                'expanded' => true,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('p')
+                        ->orderBy('p.name', 'ASC')
+                        ->addOrderBy('p.startDate', 'ASC');
+                },
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

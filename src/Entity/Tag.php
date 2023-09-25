@@ -7,8 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: TagRepository::class)]
+#[UniqueEntity('name')]
 class Tag
 {
     #[ORM\Id]
@@ -16,16 +19,31 @@ class Tag
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 3,
+        max: 191,
+    )]
     #[ORM\Column(length: 191)]
     private ?string $name = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(max: 1000)]
+    #[ORM\Column(
+        type: Types::TEXT,
+        nullable: true
+    )]
     private ?string $description = null;
 
-    #[ORM\ManyToMany(targetEntity: Student::class, mappedBy: 'tags')]
+    #[ORM\ManyToMany(
+        targetEntity: Student::class,
+        mappedBy: 'tags'
+    )]
     private Collection $students;
 
-    #[ORM\ManyToMany(targetEntity: Project::class, mappedBy: 'tags')]
+    #[ORM\ManyToMany(
+        targetEntity: Project::class,
+        mappedBy: 'tags'
+    )]
     private Collection $projects;
 
     public function __construct()
