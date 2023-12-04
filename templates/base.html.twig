@@ -62,6 +62,14 @@
                                     <a class="nav-link" href="{{ path('app_admin_user_index') }}">Students</a>
                                 </li>
                             </ul>
+                            {% if app.user %}
+                            <div class="mb-3">
+                                Bonjour, {{ app.user.userIdentifier }} <a href="{{ path('app_logout') }}">Déconnexion</a>
+                            </div>
+                            {% else %}
+                            
+                            <div> <a href="{{ path('app_login') }}">Connexion</a></div>
+                        {% endif %}
                         </div>
                     </div>
                 </nav>
